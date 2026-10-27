@@ -5,7 +5,7 @@ export const CARD_EXAMPLE = '카드 잃어버렸는데 결제 문자가 왔어.'
 export const QUESTION = '변경 전에 뭘 확인하면 되나요?'
 export type DemoMenu = 'transfer' | 'card'
 interface MockPresentation { menu: DemoMenu; intent: string; detail: string; actionLabel: string }
-// Only mock responses carry local menu metadata. The HTTP contract is unchanged.
+// Presentation metadata for the fixed mock examples; real API actions are validated in api/adapter.
 const presentations = new WeakMap<Reply, MockPresentation>()
 export const DEMO_MENUS: Record<DemoMenu, MockPresentation> = {
   transfer: { menu: 'transfer', intent: '생활비 이체일 변경', detail: '변경 희망 · 매달 20일 → 26일', actionLabel: '자동이체 메뉴 열기' },

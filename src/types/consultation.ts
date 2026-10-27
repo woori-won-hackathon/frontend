@@ -5,10 +5,12 @@ export interface Recommendation {
   reason: string
   reasons?: string[]
   score?: number
+  rank?: number
   processable?: boolean
   officialPageUrl?: string | null
 }
 export interface Source { title: string; url: string }
+export interface BusinessAction { menu: 'transfer' | 'card'; label: string; demo: true }
 export interface Reply {
   sessionId: string
   responseType: ResponseType
@@ -16,6 +18,8 @@ export interface Reply {
   recommendations: Recommendation[]
   sources: Source[]
   summary: string | null
+  actions?: BusinessAction[]
+  guidance?: string | null
 }
 export interface Session { sessionId: string; welcomeMessage: string }
 export interface ConsultationApi {
