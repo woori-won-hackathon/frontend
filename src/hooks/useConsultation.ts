@@ -49,6 +49,29 @@ export function useConsultation(api: ConsultationApi = consultationApi, autoStar
     // Best effort on unmount. Browser/tab termination cannot guarantee delivery.
     if (previousSession) void api.endSession(previousSession).catch(() => {})
   }, [api])
+  const finishConsultation = async (): Promise<boolean> => {
+    if (locked.current) return false
+    const token = ++generation.current
+    request.current?.abort()
+    const controller = new AbortController(); request.current = controller
+    locked.current = true; setPending(true); setError(null)
+    try {
+      if (session.current) {
+        try { await api.endSession(session.current, controller.signal) }
+        catch (err) {
+          // An explicit retry may confirm that a previous, timed-out close already succeeded.
+          if (!(err instanceof ApiError && (err.status === 404 || err.status === 409))) throw err
+        }
+      }
+      if (token !== generation.current) return false
+      session.current = null
+      setSessionId(null); setMessages([]); setLatest(null); setDraft(''); setPendingMessage(null); setCleanupError(null)
+      return true
+    } catch (err) {
+      if (token === generation.current) setError(err instanceof ApiError ? err : new ApiError('CLOSE_FAILED', '서버의 상담 종료를 확인하지 못했어요.', true))
+      return false
+    } finally { if (token === generation.current) { locked.current = false; setPending(false) } }
+  }
   useEffect(() => {
     let disposed = false
     queueMicrotask(() => { if (!disposed && autoStart) void newConsultation() })
@@ -57,7 +80,8 @@ export function useConsultation(api: ConsultationApi = consultationApi, autoStar
   const send = async (message?: string): Promise<Reply | null> => {
     const submittedDraft = message ?? draft
     const text = submittedDraft.trim()
-    if (locked.current || !sessionId || !text) return null
+    if (locked.current || !session.current || !text) return null
+    const currentSession = session.current
     // Keep the in-flight bubble separate from the now-empty input; restore only on failure.
     setDraft(''); setPendingMessage(text)
     const token = generation.current
@@ -65,7 +89,7 @@ export function useConsultation(api: ConsultationApi = consultationApi, autoStar
     const controller = new AbortController(); request.current = controller
     // Commit both messages on success; a failed submission leaves its input editable without duplicate history.
     try {
-      const result = await api.sendMessage(sessionId, text, controller.signal)
+      const result = await api.sendMessage(currentSession, text, controller.signal)
       if (token !== generation.current) return null
       setMessages(previous => [...previous, { id: crypto.randomUUID(), role: 'user', text }, { id: crypto.randomUUID(), role: 'assistant', text: result.message, reply: result }])
       setLatest(result)
@@ -74,5 +98,5 @@ export function useConsultation(api: ConsultationApi = consultationApi, autoStar
     finally { if (token === generation.current) { locked.current = false; setPending(false); setPendingMessage(null) } }
     return null
   }
-  return { sessionId, messages, latest, draft, setDraft, pendingMessage, pending, error, cleanupError, send, newConsultation }
+  return { sessionId, messages, latest, draft, setDraft, pendingMessage, pending, error, cleanupError, send, newConsultation, finishConsultation }
 }

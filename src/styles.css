@@ -92,3 +92,20 @@
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
 @media(max-width:360px){.followup-help,.business-tip{margin-left:30px;max-width:calc(100% - 30px)}}
 
+/* Local-only transfer change demonstration and confirmed session completion. */
+.transfer-demo{display:flex;flex-direction:column;gap:14px;min-height:100%;--blue:#0076bc}
+.transfer-demo h1{font-size:23px;margin:0;outline:none;scroll-margin-top:20px}
+.transfer-demo .eyebrow{margin:0}.transfer-demo h2{margin:8px 0 0}
+.transfer-account{background:#edf7ff;border:1px solid #dcebf6;border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:8px;font-size:13px}
+.transfer-account small{color:#60718b}.transfer-account strong{font-size:16px}.transfer-account>span{color:#52647b}
+.transfer-select{border:1px solid #dce5ef;border-radius:16px;padding:18px;display:flex;align-items:center;justify-content:space-between;gap:12px;text-align:left;background:white;box-shadow:0 3px 12px #17365908;width:100%}
+.transfer-select>span:first-child{display:flex;flex-direction:column;gap:9px}.transfer-select strong{font-size:16px}.transfer-select span span{font-size:12px;color:#60718b}.transfer-select small{color:#0076bc}.transfer-select>span:last-child{color:#0076bc;font-size:24px}
+.transfer-rows{margin:0;font-size:13px}.transfer-rows>div{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:14px 0;border-bottom:1px solid #e7edf4}.transfer-rows dt{color:#64748b;flex-shrink:0}.transfer-rows dd{margin:0;text-align:right;font-weight:600;overflow-wrap:anywhere}
+.transfer-progress{list-style:none;display:flex;gap:20px;padding:0;margin:8px 0;font-size:12px;color:#71809a}.transfer-progress [aria-current]{color:#0076bc;font-weight:700}
+.transfer-day{font-size:16px;font-weight:700;display:flex;flex-direction:column;gap:10px;margin-top:10px}.transfer-day small{font-size:12px;font-weight:400;color:#64748b}.transfer-day select{font:inherit;color:#172544;border:1px solid #0076bc;border-radius:12px;padding:16px;background:white;width:100%;min-height:52px}.transfer-day select:focus-visible{outline:3px solid #9ccfff;outline-offset:2px}
+.transfer-actions{display:grid;grid-template-columns:1fr 1.5fr;gap:10px;margin-top:auto;padding-top:15px}.transfer-actions button{min-height:50px}
+.transfer-comparison{background:#edf7ff;border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:12px}.transfer-comparison strong{font-size:20px}.transfer-comparison em{font-style:normal;color:#0076bc}.transfer-comparison strong span{color:#8caac2;margin:0 6px}
+.transfer-success{background:#0076bc;color:white;border-radius:16px;padding:24px 16px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:15px}.transfer-success>span,.ended-icon{display:grid;place-items:center;width:60px;height:60px;border-radius:50%;background:white;color:#0076bc;font-size:32px}
+.transfer-demo .notice{margin:0}.transfer-demo .text-button{align-self:center}.transfer-demo .business-footnote{margin:0;padding:8px 0}.transfer-demo>.primary-button{margin-top:auto}.transfer-demo .return-chat{margin-top:auto}
+.ended-screen{display:flex;flex-direction:column;gap:16px;min-height:100%;text-align:center;padding-top:50px;--blue:#0076bc}.ended-icon{align-self:center;border:2px solid #0076bc;margin:10px 0}.ended-screen h1{margin:0}.ended-screen>p{margin:0;color:#60718b;font-size:14px}.ended-screen .transfer-account{text-align:left;margin:10px 0}.ended-screen>.primary-button{margin-top:auto}
+@media(max-width:360px){.transfer-comparison strong{font-size:17px}.transfer-rows{font-size:12px}.transfer-account{padding:14px}}

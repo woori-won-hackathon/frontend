@@ -12,7 +12,8 @@ import { BusinessMenu } from './components/BusinessMenu'
 import { HelpDock } from './components/HelpDock'
 import { Icon } from './components/Icon'
 import { AnalysisScreen } from './components/AnalysisScreen'
-type View = 'home' | 'inquiry' | 'analysis' | 'recommendation' | 'chat' | 'business' | 'help'
+import { initialDemoTransfer } from './mocks/transfers'
+type View = 'home' | 'inquiry' | 'analysis' | 'recommendation' | 'chat' | 'business' | 'help' | 'ended'
 export default function App({ api = consultationApi, mockMode = isMock }: { api?: ConsultationApi; mockMode?: boolean }) {
   const chat = useConsultation(api, false)
   const [view, setView] = useState<View>('home')
@@ -20,6 +21,7 @@ export default function App({ api = consultationApi, mockMode = isMock }: { api?
   const [menu, setMenu] = useState<DemoMenu>('transfer')
   const [query, setQuery] = useState('')
   const [selectedChannel, setSelectedChannel] = useState<string | null>(null)
+  const [transfer, setTransfer] = useState(initialDemoTransfer)
   const end = useRef<HTMLDivElement>(null)
   const main = useRef<HTMLDivElement>(null)
   const inquiryAttempt = useRef(0)
@@ -31,11 +33,12 @@ export default function App({ api = consultationApi, mockMode = isMock }: { api?
   useEffect(() => { if (view === 'chat' && !hidden) end.current?.scrollIntoView({ block: 'nearest' }) }, [chat.messages, chat.pending, view, hidden])
   function enterConsultation() {
     setView(chat.messages.length > 1 ? 'chat' : 'inquiry')
-    if (!chat.sessionId && !chat.pending) void chat.newConsultation()
+    if (!chat.sessionId && !chat.pending) { setTransfer(initialDemoTransfer()); void chat.newConsultation() }
   }
   function reset() {
     inquiryAttempt.current++
     setHidden(false); setQuery(''); setSelectedChannel(null); setView('inquiry')
+    setTransfer(initialDemoTransfer())
     void chat.newConsultation()
   }
   function fill(text: string) { chat.setDraft(text); document.getElementById('message')?.focus() }
@@ -56,13 +59,16 @@ export default function App({ api = consultationApi, mockMode = isMock }: { api?
     if (result?.responseType === 'CHANNEL_RECOMMENDATION') setView('recommendation')
   }
   function openMenu(kind: DemoMenu) { setMenu(kind); setView('business') }
+  async function finish() {
+    if (await chat.finishConsultation()) { setSelectedChannel(null); setQuery(''); setView('ended') }
+  }
   function goHome() { inquiryAttempt.current++; setView('home') }
-  const heading = { home: '우리길', inquiry: '고객센터', analysis: '고객센터', recommendation: 'AI 추천 결과', chat: '우리길 AI 상담', business: menu === 'transfer' ? '자동이체' : '카드 분실 안내', help: '도움말' }[view]
+  const heading = { home: '우리길', inquiry: '고객센터', analysis: '고객센터', recommendation: 'AI 추천 결과', chat: '우리길 AI 상담', business: menu === 'transfer' ? '자동이체' : '카드 분실 안내', help: '도움말', ended: '우리길 AI 상담' }[view]
   const errors = <>{chat.cleanupError && <div className="error" role="alert"><strong>이전 상담 종료 확인 필요</strong><p>{chat.cleanupError}</p></div>}{chat.error && <div className="error" role="alert"><strong>요청을 완료하지 못했어요</strong><p>{chat.error.message}</p><small>{chat.error.code} · 자동 재전송하지 않아요.</small>{!chat.sessionId && <button className="secondary-button" onClick={reset}>상담 다시 시작</button>}</div>}</>
   const loading = chat.pending && <div className="loading" role="status"><span aria-hidden="true">● ● ●</span><p>{chat.sessionId ? '문의 내용을 확인하고 있어요' : '새 상담을 준비하고 있어요'}</p></div>
   return <div className="workspace"><div className="app-shell">
     <a href="#screen" className="skip-link">본문으로 바로가기</a>
-    {view !== 'home' && <header className="app-header"><button className="icon-button" aria-label={view === 'business' ? '상담으로 돌아가기' : '홈으로 돌아가기'} onClick={view === 'business' ? enterConsultation : goHome}><Icon name="back"/></button><strong>{heading}</strong><span className="mode-badge">{view === 'business' ? '가상 업무 메뉴' : mockMode ? '가상 체험' : 'API 모드'}</span></header>}
+    {view !== 'home' && <header className="app-header"><button className="icon-button" disabled={view === 'business' && chat.pending} aria-label={view === 'business' ? '상담으로 돌아가기' : '홈으로 돌아가기'} onClick={view === 'business' ? enterConsultation : goHome}><Icon name="back"/></button><strong>{heading}</strong><span className="mode-badge">{view === 'business' ? '가상 업무 체험' : mockMode ? '가상 체험' : 'API 모드'}</span></header>}
     {view === 'chat' && <nav className="chat-toolbar" aria-label="상담 도구"><button aria-pressed={hidden} onClick={() => setHidden(!hidden)}>{hidden ? '대화 다시 보기' : '대화 숨기기'}</button><button onClick={reset}>↻ 새 상담</button></nav>}
     <div id="screen" className={`screen-view view-${view}`} ref={main} tabIndex={-1}>
       {view === 'home' && <HomeScreen onConsult={enterConsultation} onTransfer={() => mockMode ? openMenu('transfer') : enterConsultation()} onHelp={() => setView('help')}/>}
@@ -90,7 +96,8 @@ export default function App({ api = consultationApi, mockMode = isMock }: { api?
           <div ref={end}/>
         </>}
       </main>}
-      {view === 'business' && <BusinessMenu key={menu} menu={menu} onBack={enterConsultation}/>}
+      {view === 'business' && <BusinessMenu key={menu} menu={menu} transfer={transfer} onChange={day => setTransfer(previous => ({ ...previous, day }))} onBack={enterConsultation} onFinish={() => void finish()} finishing={chat.pending} finishError={chat.error?.message}/>}
+      {view === 'ended' && <main className="page-content ended-screen"><span className="ended-icon" aria-hidden="true">✓</span><h1>상담을 마쳤어요</h1><p>자동이체 날짜 변경 체험을 완료했어요.<br/>도움이 필요하면 새 상담을 시작해 주세요.</p><section className="transfer-account"><small>이번 상담 · 가상 체험</small><strong>{transfer.title} 자동이체</strong><span>변경 후 이체일 · 매월 {transfer.day}일</span></section><p className="notice">실제 계좌의 자동이체는 변경되지 않았어요.</p><button className="primary-button" onClick={goHome}>홈으로</button><button className="secondary-button" onClick={reset}>새 상담 시작</button></main>}
     </div>
     {view === 'chat' && !hidden && <Composer draft={chat.draft} setDraft={chat.setDraft} disabled={chat.pending || !chat.sessionId} send={submitChat}/>}
     <footer className="app-footer">{view === 'home' && <span className="footer-mode">{mockMode ? '가상 체험 · ' : 'API 모드 · '}</span>}해커톤 프로토타입 · 우리은행 공식 서비스 아님</footer>
