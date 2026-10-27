@@ -7,6 +7,7 @@ export interface ChannelRecommendationResponse {
   processable: boolean
   reasons: string[]
   officialPageUrl: string | null
+  rank?: number | null
 }
 export interface ConsultationMessageResponse {
   sessionId: string
@@ -14,4 +15,7 @@ export interface ConsultationMessageResponse {
   recommendations: ChannelRecommendationResponse[]
   consultationSummary: string | null
   officialPageUrl: string | null
+  responseType?: 'FOLLOW_UP' | 'GUIDANCE' | 'CHANNEL_RECOMMENDATION' | 'UNRESOLVED'
+  actions?: { menuId: string; label: string; demo: boolean }[]
+  guidance?: string | null
 }

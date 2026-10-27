@@ -17,7 +17,8 @@ export function createHttpApi(base = '/api/v1'): ConsultationApi {
     signal?.addEventListener('abort', cancel, { once: true })
     if (signal?.aborted) controller.abort()
     let timedOut = false
-    const timeout = setTimeout(() => { timedOut = true; controller.abort() }, 20000)
+    // Tool-based AI consultation can require several model round trips.
+    const timeout = setTimeout(() => { timedOut = true; controller.abort() }, 90000)
     try {
       const response = await fetch(`${base.replace(/\/$/, '')}${path}`, {
         method, signal: controller.signal,

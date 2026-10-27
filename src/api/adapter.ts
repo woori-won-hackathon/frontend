@@ -1,4 +1,4 @@
-import { ApiError, type Reply, type Session, type Source, type Recommendation } from '../types/consultation'
+import { ApiError, type Reply, type Session, type Source, type Recommendation, type ResponseType, type BusinessAction } from '../types/consultation'
 
 function record(value: unknown): Record<string, unknown> {
   if (!value || typeof value !== 'object' || Array.isArray(value)) throw new ApiError('INVALID_RESPONSE', '서버 응답 형식을 확인할 수 없어요.')
@@ -42,21 +42,42 @@ export function adaptReply(value: unknown, sessionId: string): Reply {
       throw new ApiError('INVALID_RESPONSE', '추천 채널의 점수나 처리 가능 여부를 확인할 수 없어요.')
     }
     const reasons = list(r.reasons, string)
+    if (r.rank != null && (typeof r.rank !== 'number' || !Number.isInteger(r.rank) || r.rank < 1)) {
+      throw new ApiError('INVALID_RESPONSE', '추천 순위를 확인할 수 없어요.')
+    }
     return {
       channelId: channel,
       // Only CHATBOT is specified so far. Unknown channel identifiers remain visible unchanged.
-      name: channel === 'CHATBOT' ? '챗봇/채팅상담' : channel,
+      name: ({ CHATBOT: '챗봇/채팅상담', PHONE: '전화 상담', EMAIL: '이메일 상담' } as Record<string, string>)[channel] ?? channel,
+      rank: r.rank == null ? undefined : r.rank as number,
       reason: reasons.join('\n'), reasons, score: r.score, processable: r.processable,
       officialPageUrl: safeOfficialUrl(r.officialPageUrl),
     }
   })
   const url = safeOfficialUrl(data.officialPageUrl)
   const sources: Source[] = url ? [{ title: '공식 안내 페이지', url }] : []
+  // Older servers remain compatible; explicit states take precedence over list length.
+  const responseType = data.responseType == null
+    ? recommendations.length ? 'CHANNEL_RECOMMENDATION' : 'GUIDANCE'
+    : string(data.responseType)
+  if (!['FOLLOW_UP', 'GUIDANCE', 'CHANNEL_RECOMMENDATION', 'UNRESOLVED'].includes(responseType)) {
+    throw new ApiError('INVALID_RESPONSE', '서버의 상담 진행 상태를 확인할 수 없어요.')
+  }
+  if (responseType === 'FOLLOW_UP' && recommendations.length) {
+    throw new ApiError('INVALID_RESPONSE', '추가 질문과 추천 결과의 상태가 일치하지 않아요.')
+  }
+  const actions = responseType === 'CHANNEL_RECOMMENDATION' && recommendations.some(item => item.processable === true)
+    ? list(data.actions, record).flatMap<BusinessAction>(action => {
+      // Accept only the two registered mock screens, never a server-provided arbitrary route.
+      const menu = action.menuId === 'AUTO_TRANSFER' ? 'transfer' : action.menuId === 'CARD_LOSS' ? 'card' : null
+      return menu && action.demo === true ? [{ menu, label: string(action.label), demo: true }] : []
+    }) : []
   return {
     sessionId,
-    // The backend does not provide responseType. Do not guess follow-up/unresolved from answer text.
-    responseType: recommendations.length ? 'CHANNEL_RECOMMENDATION' : 'GUIDANCE',
+    responseType: responseType as ResponseType,
     message: string(data.answer), recommendations, sources,
     summary: optionalString(data.consultationSummary),
+    actions,
+    guidance: optionalString(data.guidance),
   }
 }

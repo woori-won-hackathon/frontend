@@ -6,6 +6,7 @@ export function useConsultation(api: ConsultationApi = consultationApi, autoStar
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [latest, setLatest] = useState<Reply | null>(null)
   const [draft, setDraft] = useState('')
+  const [pendingMessage, setPendingMessage] = useState<string | null>(null)
   const [pending, setPending] = useState(false)
   const [error, setError] = useState<ApiError | null>(null)
   const [cleanupError, setCleanupError] = useState<string | null>(null)
@@ -20,7 +21,7 @@ export function useConsultation(api: ConsultationApi = consultationApi, autoStar
     session.current = null
     const controller = new AbortController(); request.current = controller
     locked.current = true
-    setSessionId(null); setMessages([]); setLatest(null); setDraft(''); setError(null); setCleanupError(null); setPending(true)
+    setSessionId(null); setMessages([]); setLatest(null); setDraft(''); setPendingMessage(null); setError(null); setCleanupError(null); setPending(true)
     try {
       if (previousSession) {
         try { await api.endSession(previousSession) }
@@ -54,9 +55,11 @@ export function useConsultation(api: ConsultationApi = consultationApi, autoStar
     return () => { disposed = true; cancelActive() }
   }, [autoStart, cancelActive, newConsultation])
   const send = async (message?: string): Promise<Reply | null> => {
-    const text = (message ?? draft).trim()
+    const submittedDraft = message ?? draft
+    const text = submittedDraft.trim()
     if (locked.current || !sessionId || !text) return null
-    if (message !== undefined) setDraft(message)
+    // Keep the in-flight bubble separate from the now-empty input; restore only on failure.
+    setDraft(''); setPendingMessage(text)
     const token = generation.current
     locked.current = true; setPending(true); setError(null); setLatest(null)
     const controller = new AbortController(); request.current = controller
@@ -65,11 +68,11 @@ export function useConsultation(api: ConsultationApi = consultationApi, autoStar
       const result = await api.sendMessage(sessionId, text, controller.signal)
       if (token !== generation.current) return null
       setMessages(previous => [...previous, { id: crypto.randomUUID(), role: 'user', text }, { id: crypto.randomUUID(), role: 'assistant', text: result.message, reply: result }])
-      setLatest(result); setDraft('')
+      setLatest(result)
       return result
-    } catch (err) { if (token === generation.current) setError(err instanceof ApiError ? err : new ApiError('UNKNOWN', '요청을 처리하지 못했어요. 입력은 보관되어 있어요.', true)) }
-    finally { if (token === generation.current) { locked.current = false; setPending(false) } }
+    } catch (err) { if (token === generation.current) { setDraft(submittedDraft); setError(err instanceof ApiError ? err : new ApiError('UNKNOWN', '요청을 처리하지 못했어요. 입력은 보관되어 있어요.', true)) } }
+    finally { if (token === generation.current) { locked.current = false; setPending(false); setPendingMessage(null) } }
     return null
   }
-  return { sessionId, messages, latest, draft, setDraft, pending, error, cleanupError, send, newConsultation }
+  return { sessionId, messages, latest, draft, setDraft, pendingMessage, pending, error, cleanupError, send, newConsultation }
 }
