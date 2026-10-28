@@ -8,6 +8,10 @@
 /* Initial request analysis: visible only while the real request is pending. */
 .view-analysis{display:flex;background:white}
 .analysis-screen{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:36px 22px 60px;min-height:390px}
+/* 좌우 버튼 너비와 관계없이 로고를 헤더 중앙에 고정한다. */
+.home-header{position:relative}
+.home-logo{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:block;width:108px;height:72px;object-fit:contain}
+.home-header{min-height:108px}
 .analysis-emblem{position:relative;width:72px;height:72px;border-radius:23px;background:linear-gradient(140deg,#a15bff,#497aff);margin-bottom:25px;box-shadow:0 10px 30px #8062e51a;display:grid;place-items:center}
 .analysis-emblem span{position:absolute;width:23px;height:48px;background:#ffffff73;border-radius:50%;transform:rotate(12deg)}
 .analysis-emblem span+span{width:28px;height:44px;background:#ffffff4d;transform:rotate(-12deg)}
@@ -16,6 +20,19 @@
 .analysis-dots i{width:6px;height:6px;border-radius:50%;background:#a09aec}
 .analysis-dots i:nth-child(2){background:#8f87df}.analysis-dots i:nth-child(3){background:#766fd0}
 .analysis-screen p{font-size:13px;line-height:1.9;color:#6d7e97;margin:0}
+/* 두 로딩 화면의 점을 순서대로 튀게 하고 분석 아이콘에 회전감을 준다. */
+.loading-dots{display:flex;justify-content:center;align-items:center;gap:10px;height:28px}
+.loading-dots i{display:block;width:10px;height:10px;border-radius:50%;background:#0b7bff}
+.loading-dots i,.analysis-dots i{animation:loading-bounce 1.15s ease-in-out infinite}
+.loading-dots i:nth-child(2),.analysis-dots i:nth-child(2){animation-delay:.16s}
+.loading-dots i:nth-child(3),.analysis-dots i:nth-child(3){animation-delay:.32s}
+.analysis-emblem{animation:analysis-float 2.4s ease-in-out infinite}
+.analysis-emblem span{animation:analysis-orbit 2s linear infinite}
+.analysis-emblem span+span{animation-direction:reverse}
+@keyframes loading-bounce{0%,65%,100%{transform:translateY(0) scale(.8);opacity:.45}32%{transform:translateY(-9px) scale(1.15);opacity:1}}
+@keyframes analysis-float{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-9px) rotate(4deg)}}
+@keyframes analysis-orbit{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.loading-dots i,.analysis-dots i,.analysis-emblem,.analysis-emblem span{animation:none}}
 /* Shared help */
 .help-dock{border-radius:14px;background:#f5f7fb;margin:10px 0;overflow:hidden;border:1px solid #eef2f7}.help-dock>summary{padding:14px;font-size:12px;font-weight:700;list-style:none;min-height:46px}.help-dock>summary>span{float:right;font-size:9px;color:#78869c;font-weight:400}.help-body{padding:0 10px 10px}.help-tabs{display:flex;border-bottom:1px solid #dce5f2}.help-tabs button{flex:1;font-size:12px;color:var(--muted);min-height:39px;border-bottom:2px solid transparent}.help-tabs button[aria-pressed=true]{color:var(--blue);border-bottom-color:var(--blue);font-weight:700}.help-item{background:white;border:1px solid var(--border);border-bottom:0}.help-item:last-child{border-bottom:1px solid var(--border);border-radius:0 0 9px 9px}.help-item summary{display:flex;justify-content:space-between;align-items:center;padding:13px 11px;font-size:12px;min-height:44px}.help-item p{padding:0 11px 10px;color:#5c6f87;font-size:12px;margin:0}
 /* Recommendation */

@@ -1,12 +1,13 @@
 import { useState } from 'react'
 import { Icon } from './Icon'
+import wonwayLogo from '../assets/wonway-logo.png'
 export function HomeScreen({ onConsult, onTransfer, onHelp }: { onConsult: () => void; onTransfer: () => void; onHelp: () => void }) {
   const [easy, setEasy] = useState(false)
   const [notice, setNotice] = useState(false)
   return <>
     <header className="home-header">
       <button className="mode-toggle" onClick={() => setEasy(!easy)} aria-pressed={easy}><span className={!easy ? 'selected' : ''}>일반</span><span className={easy ? 'selected' : ''}>쉬운</span></button>
-      <div className="wordmark">우리길<small>WONWAY</small></div>
+      <img className="home-logo" src={wonwayLogo} alt="우리길" width="108" height="72"/>
       <button className="icon-button" aria-label="프로토타입 알림" aria-expanded={notice} onClick={() => setNotice(!notice)}><Icon name="bell"/></button>
     </header>
     <main className={`home-content ${easy ? 'easy' : ''}`}>
