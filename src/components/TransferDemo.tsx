@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type { DemoTransfer } from '../mocks/transfers'
+import { TransferDayPicker } from './TransferDayPicker'
 
 type Step = 'list' | 'detail' | 'review' | 'edit' | 'confirm' | 'complete'
 interface Props {
@@ -43,7 +44,7 @@ export function TransferDemo({ transfer, onChange, onBack, onFinish, finishing, 
     </> : step === 'edit' ? <>
       <ol className="transfer-progress" aria-label="변경 단계"><li aria-current="step">1 정보 입력</li><li>2 내용 확인</li></ol>
       <section className="transfer-account"><strong>{transfer.title} · {transfer.amount}</strong><span>받는 분 {transfer.recipient} · {transfer.destination.split(' · ')[0]}</span></section>
-      <label className="transfer-day" htmlFor="transfer-day">이체일<small>현재 매월 {beforeDay}일</small><select id="transfer-day" value={day} onChange={event => setDay(Number(event.target.value))}>{Array.from({ length: 31 }, (_, index) => <option key={index + 1} value={index + 1}>매월 {index + 1}일</option>)}</select></label>
+      <TransferDayPicker day={day} beforeDay={beforeDay} onChange={setDay}/>
       <p className="muted">변경할 날짜를 선택해 주세요.</p>
       <div className="transfer-actions"><button className="secondary-button" onClick={() => setStep('detail')}>취소</button><button className="primary-button" disabled={day === beforeDay} onClick={() => setStep('confirm')}>다음</button></div>
     </> : step === 'confirm' ? <>

@@ -19,9 +19,13 @@ async function openTransfer(api = createMockApi(0)) {
   fireEvent.click(screen.getByRole('button', { name: /자동이체 메뉴 열기/ }))
   fireEvent.click(screen.getByRole('button', { name: /생활비 자동이체/ }))
 }
+function selectDay(day: number) {
+  fireEvent.click(screen.getByRole('button', { name: /^이체일 매월/ }))
+  fireEvent.click(screen.getByRole('option', { name: `매월 ${day}일` }))
+}
 function completeDemo() {
   fireEvent.click(screen.getByRole('button', { name: '자동이체 변경하기' }))
-  fireEvent.change(screen.getByLabelText(/이체일/), { target: { value: '26' } })
+  selectDay(26)
   fireEvent.click(screen.getByRole('button', { name: '다음' }))
   fireEvent.click(screen.getByRole('button', { name: '변경하기' }))
 }
@@ -31,12 +35,12 @@ it('목업 변경은 API 요청 없이 진행하고 상담 종료 후 새 세션
   const send = vi.spyOn(api, 'sendMessage'), close = vi.spyOn(api, 'endSession'), create = vi.spyOn(api, 'createSession')
   await openTransfer(api)
   fireEvent.click(screen.getByRole('button', { name: '자동이체 변경하기' }))
-  fireEvent.change(screen.getByLabelText(/이체일/), { target: { value: '20' } })
+  selectDay(20)
   expect((screen.getByRole('button', { name: '다음' }) as HTMLButtonElement).disabled).toBe(true)
-  fireEvent.change(screen.getByLabelText(/이체일/), { target: { value: '25' } })
+  selectDay(25)
   fireEvent.click(screen.getByRole('button', { name: '다음' }))
   fireEvent.click(screen.getByRole('button', { name: '이전' }))
-  expect((screen.getByLabelText(/이체일/) as HTMLSelectElement).value).toBe('25')
+  expect(screen.getByRole('button', { name: '이체일 매월 25일' })).toBeTruthy()
   fireEvent.click(screen.getByRole('button', { name: '취소' }))
   expect(screen.getByText('매월 20일 · 300,000원')).toBeTruthy()
   completeDemo()
