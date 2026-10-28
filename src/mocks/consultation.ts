@@ -26,7 +26,7 @@ export function createMockApi(delay = 900): ConsultationApi {
       await pause(signal)
       const sessionId = crypto.randomUUID()
       sessions.set(sessionId, null)
-      return { sessionId, welcomeMessage: '안녕하세요, 우리길이에요. 상황에 맞는 다음 단계를 안내해 드릴게요.' }
+      return { sessionId, welcomeMessage: '안녕하세요, WON길이에요. 상황에 맞는 다음 단계를 안내해 드릴게요.' }
     },
     async endSession(sessionId) { sessions.delete(sessionId) },
     async sendMessage(sessionId, message, signal) {

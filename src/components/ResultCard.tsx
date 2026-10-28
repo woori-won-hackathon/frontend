@@ -18,7 +18,7 @@ export function ResultCard({ reply, actionLabel, onAction, selected = false }: P
     })}
   </section>
   return <><section className={`result-card ${actionLabel || reply.recommendations.length ? 'result-card-action' : ''}`} aria-label="최신 응답 결과">
-    <div className="result-heading"><span className="card-icon" aria-hidden="true">↗</span><h3>{actionLabel ? '업무 메뉴 안내' : reply.recommendations.length ? '우리길의 추천' : reply.responseType === 'UNRESOLVED' ? '이 문의는 안내하기 어려워요' : reply.responseType === 'FOLLOW_UP' ? '한 가지만 더 확인할게요' : '이렇게 확인해 보세요'}</h3></div>
+    <div className="result-heading"><span className="card-icon" aria-hidden="true">↗</span><h3>{actionLabel ? '업무 메뉴 안내' : reply.recommendations.length ? 'WON길의 추천' : reply.responseType === 'UNRESOLVED' ? '이 문의는 안내하기 어려워요' : reply.responseType === 'FOLLOW_UP' ? '한 가지만 더 확인할게요' : '이렇게 확인해 보세요'}</h3></div>
     {!actionLabel && reply.recommendations.map((r, index) => <div className="recommendation" key={`${r.channelId}-${index}`}>
       <span className="small-label">추천 {r.score !== undefined ? '상담 채널' : '업무'}</span><h4>{r.name}</h4>
       {!selected && r.score !== undefined && <p>추천 점수: {r.score}</p>}

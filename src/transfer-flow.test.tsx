@@ -11,7 +11,7 @@ afterEach(() => { cleanup(); vi.restoreAllMocks() })
 async function openTransfer(api = createMockApi(0)) {
   Element.prototype.scrollIntoView = vi.fn()
   render(<App api={api} mockMode/>)
-  fireEvent.click(screen.getByRole('button', { name: /우리길 AI 고객센터/ }))
+  fireEvent.click(screen.getByRole('button', { name: /WON길 AI 고객센터/ }))
   await waitFor(() => expect((screen.getByRole('button', { name: /생활비 보내는 날짜/ }) as HTMLButtonElement).disabled).toBe(false))
   fireEvent.click(screen.getByRole('button', { name: /생활비 보내는 날짜/ }))
   fireEvent.click(screen.getByRole('button', { name: '메시지 전송' }))

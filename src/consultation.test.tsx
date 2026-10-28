@@ -166,7 +166,7 @@ describe('앱 시연 흐름', () => {
       endSession: async () => {},
     }
     render(<App api={api} mockMode={false}/>)
-    fireEvent.click(screen.getByRole('button', { name: /우리길 AI 고객센터/ }))
+    fireEvent.click(screen.getByRole('button', { name: /WON길 AI 고객센터/ }))
     await waitFor(() => expect(screen.getByRole('textbox').hasAttribute('readonly')).toBe(false))
     fireEvent.change(screen.getByRole('textbox'), { target: { value: '자동이체 문의' } })
     fireEvent.click(screen.getByRole('button', { name: '메시지 전송' }))
@@ -185,7 +185,7 @@ describe('앱 시연 흐름', () => {
     const sendMessage = vi.fn(() => new Promise<Reply>(resolve => { resolveReply = resolve }))
     const api: ConsultationApi = { createSession: async () => ({ sessionId: 'analysis', welcomeMessage: '환영' }), sendMessage, endSession: async () => {} }
     render(<App api={api} mockMode={false}/>)
-    fireEvent.click(screen.getByRole('button', { name: /우리길 AI 고객센터/ }))
+    fireEvent.click(screen.getByRole('button', { name: /WON길 AI 고객센터/ }))
     await waitFor(() => expect(screen.getByRole('textbox').hasAttribute('readonly')).toBe(false))
     fireEvent.change(screen.getByRole('textbox'), { target: { value: '자동이체 날짜를 바꾸고 싶어요' } })
     fireEvent.click(screen.getByRole('button', { name: '메시지 전송' }))
@@ -202,7 +202,7 @@ describe('앱 시연 흐름', () => {
     let failReply!: (reason: Error) => void
     const api: ConsultationApi = { createSession: async () => ({ sessionId: 'analysis', welcomeMessage: '환영' }), sendMessage: () => new Promise((_resolve, reject) => { failReply = reject }), endSession: async () => {} }
     render(<App api={api} mockMode={false}/>)
-    fireEvent.click(screen.getByRole('button', { name: /우리길 AI 고객센터/ }))
+    fireEvent.click(screen.getByRole('button', { name: /WON길 AI 고객센터/ }))
     await waitFor(() => expect(screen.getByRole('textbox').hasAttribute('readonly')).toBe(false))
     fireEvent.change(screen.getByRole('textbox'), { target: { value: '보존할 문의' } })
     fireEvent.click(screen.getByRole('button', { name: '메시지 전송' }))
@@ -215,13 +215,13 @@ describe('앱 시연 흐름', () => {
     let resolveReply!: (value: Reply) => void
     const api: ConsultationApi = { createSession: async () => ({ sessionId: 'analysis', welcomeMessage: '환영' }), sendMessage: () => new Promise(resolve => { resolveReply = resolve }), endSession: async () => {} }
     render(<App api={api} mockMode={false}/>)
-    fireEvent.click(screen.getByRole('button', { name: /우리길 AI 고객센터/ }))
+    fireEvent.click(screen.getByRole('button', { name: /WON길 AI 고객센터/ }))
     await waitFor(() => expect(screen.getByRole('textbox').hasAttribute('readonly')).toBe(false))
     fireEvent.change(screen.getByRole('textbox'), { target: { value: '문의' } })
     fireEvent.click(screen.getByRole('button', { name: '메시지 전송' }))
     fireEvent.click(screen.getByRole('button', { name: '홈으로 돌아가기' }))
     await act(async () => { resolveReply(reply('analysis')) })
-    expect(screen.getByText('우리길 입출금')).toBeTruthy()
+    expect(screen.getByText('WON 통장')).toBeTruthy()
     expect(screen.queryByRole('log')).toBeNull()
   })
   it('API 추가 질문 두 번 → 같은 세션 답변 → 추천 → 서버가 지정한 목업 메뉴를 연다', async () => {
@@ -240,7 +240,7 @@ describe('앱 시연 흐름', () => {
     })
     vi.stubGlobal('fetch', fetchMock)
     render(<StrictMode><App api={createHttpApi()} mockMode={false}/></StrictMode>)
-    fireEvent.click(screen.getByRole('button', { name: /우리길 AI 고객센터/ }))
+    fireEvent.click(screen.getByRole('button', { name: /WON길 AI 고객센터/ }))
     await waitFor(() => expect(screen.getByRole('textbox').hasAttribute('readonly')).toBe(false))
     fireEvent.change(screen.getByRole('textbox'), { target: { value: '생활비 보내는 날짜를 바꾸고 싶어요' } })
     fireEvent.click(screen.getByRole('button', { name: '메시지 전송' }))
@@ -270,9 +270,9 @@ describe('앱 시연 흐름', () => {
     const send = vi.spyOn(api, 'sendMessage')
     const create = vi.spyOn(api, 'createSession')
     render(<App api={api} mockMode/>)
-    expect(screen.getByText('우리길 입출금')).toBeTruthy()
+    expect(screen.getByText('WON 통장')).toBeTruthy()
     expect(create).not.toHaveBeenCalled()
-    fireEvent.click(screen.getByRole('button', { name: /우리길 AI 고객센터/ }))
+    fireEvent.click(screen.getByRole('button', { name: /WON길 AI 고객센터/ }))
     await waitFor(() => expect(screen.getByRole('button', { name: /생활비 보내는 날짜/ }).hasAttribute('disabled')).toBe(false))
     fireEvent.click(screen.getByRole('button', { name: /생활비 보내는 날짜/ }))
     expect((screen.getByRole('textbox', { name: '상담 내용' }) as HTMLTextAreaElement).value).toBe(EXAMPLE)
@@ -319,7 +319,7 @@ describe('앱 시연 흐름', () => {
   })
   it('카드 문의도 추천 화면을 거친 뒤 분실 안내 메뉴만 표시한다', async () => {
     render(<App api={createMockApi(0)} mockMode/>)
-    fireEvent.click(screen.getByRole('button', { name: /우리길 AI 고객센터/ }))
+    fireEvent.click(screen.getByRole('button', { name: /WON길 AI 고객센터/ }))
     await waitFor(() => expect(screen.getByRole('button', { name: /카드 분실 후 결제 문자/ }).hasAttribute('disabled')).toBe(false))
     fireEvent.click(screen.getByRole('button', { name: /카드 분실 후 결제 문자/ }))
     fireEvent.click(screen.getByRole('button', { name: '메시지 전송' }))
@@ -335,7 +335,7 @@ describe('앱 시연 흐름', () => {
       endSession: async () => {},
     }
     render(<App api={api} mockMode={false}/>)
-    fireEvent.click(screen.getByRole('button', { name: /우리길 AI 고객센터/ }))
+    fireEvent.click(screen.getByRole('button', { name: /WON길 AI 고객센터/ }))
     await waitFor(() => expect(screen.getByRole('textbox').hasAttribute('readonly')).toBe(false))
     fireEvent.change(screen.getByRole('textbox'), { target: { value: EXAMPLE } })
     fireEvent.click(screen.getByRole('button', { name: '메시지 전송' }))
