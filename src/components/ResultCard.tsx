@@ -12,7 +12,7 @@ export function ResultCard({ reply, actionLabel, onAction, selected = false }: P
   if (selected) return <section className="result-card result-card-action compact-business-card" aria-label="최신 응답 결과">
     <div className="result-heading"><span className="card-icon" aria-hidden="true">↗</span><h3>{actionLabel ? '업무 메뉴 안내' : reply.recommendations[0]?.name ?? '업무 안내'}</h3></div>
     {reply.summary && <p className="business-purpose">{reply.summary}</p>}
-    {actionLabel && onAction ? <><button className="primary-button" onClick={onAction}>{actionLabel}<span aria-hidden="true">↗</span></button><p className="action-note">메뉴 이동 데모 · 실제 조회 / 변경 없음</p></> : reply.recommendations.map(item => {
+    {actionLabel && onAction ? <><button className="primary-button" onClick={onAction}>{actionLabel}<span aria-hidden="true">↗</span></button></> : reply.recommendations.map(item => {
       const href = item.officialPageUrl ? officialUrl(item.officialPageUrl) : null
       return href ? <a key={item.channelId} className="source-link" href={href} target="_blank" rel="noopener noreferrer">채널 공식 안내 보기 ↗</a> : null
     })}
@@ -27,7 +27,7 @@ export function ResultCard({ reply, actionLabel, onAction, selected = false }: P
       {r.officialPageUrl && officialUrl(r.officialPageUrl) && <a className="source-link" href={officialUrl(r.officialPageUrl)!} target="_blank" rel="noopener noreferrer">채널 공식 안내 보기<span aria-hidden="true">↗</span><span className="sr-only"> (새 창)</span></a>}
     </div>)}
     {!reply.recommendations.length && reply.responseType !== 'FOLLOW_UP' && <p className="no-result">현재 응답에는 추천 채널이 없어요.{reply.responseType === 'UNRESOLVED' ? ' 다른 조건이나 문의를 알려 주세요.' : ' 위 대화의 일반 안내를 확인해 주세요.'}</p>}
-    {actionLabel && onAction && <><button className="primary-button" onClick={onAction}>{actionLabel}<span aria-hidden="true">↗</span></button><p className="action-note">메뉴 이동 데모 · 실제 조회 / 변경 없음</p></>}
+    {actionLabel && onAction && <><button className="primary-button" onClick={onAction}>{actionLabel}<span aria-hidden="true">↗</span></button></>}
     {reply.sources.map(source => {
       const href = officialUrl(source.url)
       return href ? <a className="source-link" key={href} href={href} target="_blank" rel="noopener noreferrer"><span><small>공식 출처</small>{source.title}</span><span aria-hidden="true">↗</span><span className="sr-only"> (새 창)</span></a> : null
