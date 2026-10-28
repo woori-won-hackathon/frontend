@@ -62,7 +62,7 @@ export default function App({ api = consultationApi, mockMode = isMock }: { api?
     if (await chat.finishConsultation()) { setSelectedChannel(null); setQuery(''); setView('ended') }
   }
   function goHome() { inquiryAttempt.current++; setView('home') }
-  const heading = { home: '우리길', inquiry: '고객센터', analysis: '고객센터', recommendation: 'AI 추천 결과', chat: '우리길 AI 상담', business: menu === 'transfer' ? '자동이체' : '카드 분실 안내', help: '도움말', ended: '우리길 AI 상담' }[view]
+  const heading = { home: 'WON길', inquiry: '고객센터', analysis: '고객센터', recommendation: 'AI 추천 결과', chat: 'WON길 AI 상담', business: menu === 'transfer' ? '자동이체' : '카드 분실 안내', help: '도움말', ended: 'WON길 AI 상담' }[view]
   const errors = <>{chat.cleanupError && <div className="error" role="alert"><strong>이전 상담 종료 확인 필요</strong><p>{chat.cleanupError}</p></div>}{chat.error && <div className="error" role="alert"><strong>요청을 완료하지 못했어요</strong><p>{chat.error.message}</p><small>{chat.error.code} · 자동 재전송하지 않아요.</small>{!chat.sessionId && <button className="secondary-button" onClick={reset}>상담 다시 시작</button>}</div>}</>
   const loading = chat.pending && <div className="loading" role="status"><div className="loading-dots" aria-hidden="true"><i/><i/><i/></div><p>{chat.sessionId ? '문의 내용을 확인하고 있어요' : '새 상담을 준비하고 있어요'}</p></div>
   return <div className="workspace"><div className="app-shell">
@@ -74,12 +74,11 @@ export default function App({ api = consultationApi, mockMode = isMock }: { api?
       {view === 'help' && <main className="page-content"><h1>무엇이 궁금하세요?</h1><HelpDock/><button className="primary-button" onClick={enterConsultation}>고객센터에서 문의하기</button></main>}
       {view === 'analysis' && <AnalysisScreen/>}
       {view === 'inquiry' && <main className="page-content inquiry-screen">
-        <p className="eyebrow">우리길 AI 고객센터</p><h1>무엇을 도와드릴까요?</h1><p className="lead">상황을 알려주시면 상담 방법을 찾아드려요.</p>
+        <p className="eyebrow">WON길 AI 고객센터</p><h1>무엇을 도와드릴까요?</h1><p className="lead">상황을 알려주시면 상담 방법을 찾아드려요.</p>
         <Composer draft={chat.draft} setDraft={chat.setDraft} disabled={chat.pending || !chat.sessionId} send={submitInquiry} submitLabel="AI로 상담 방법 찾기" expanded/>
         {loading}{errors}
         {mockMode && <section className="example-options" aria-label="가상 문의 예시"><span>예시를 누르면 입력창에 채워져요</span><button disabled={chat.pending} onClick={() => fill(EXAMPLE)}>생활비 보내는 날짜 바꾸기 <span>↗</span></button><button disabled={chat.pending} onClick={() => fill(CARD_EXAMPLE)}>카드 분실 후 결제 문자 <span>↗</span></button><small>두 가지 예시와 자동이체 추가 질문만 지원하는 가상 응답이에요. 실제 AI 판단이 아니에요.</small></section>}
         <HelpDock/>
-        <button className="text-button new-inquiry" onClick={reset}>새 상담 시작</button>
       </main>}
       {view === 'recommendation' && chat.latest && <RecommendationScreen reply={chat.latest} query={query} mockMode={mockMode} onContinue={channelId => { setSelectedChannel(channelId ?? null); setView('chat') }}/>}
       {view === 'chat' && <main className="chat-page">

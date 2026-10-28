@@ -10,8 +10,7 @@
 .analysis-screen{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:36px 22px 60px;min-height:390px}
 /* 좌우 버튼 너비와 관계없이 로고를 헤더 중앙에 고정한다. */
 .home-header{position:relative}
-.home-logo{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:block;width:108px;height:72px;object-fit:contain}
-.home-header{min-height:108px}
+.home-logo{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:block;width:60px;height:40px;object-fit:contain}
 .analysis-emblem{position:relative;width:72px;height:72px;border-radius:23px;background:linear-gradient(140deg,#a15bff,#497aff);margin-bottom:25px;box-shadow:0 10px 30px #8062e51a;display:grid;place-items:center}
 .analysis-emblem span{position:absolute;width:23px;height:48px;background:#ffffff73;border-radius:50%;transform:rotate(12deg)}
 .analysis-emblem span+span{width:28px;height:44px;background:#ffffff4d;transform:rotate(-12deg)}

@@ -25,7 +25,7 @@ it('모든 추천을 펼쳐 보여주고 첫 채널만 활성화하며 업무 �
     sendMessage, endSession: async () => {},
   }
   render(<App api={api} mockMode={false}/> )
-  fireEvent.click(screen.getByRole('button', { name: /우리길 AI 고객센터/ }))
+  fireEvent.click(screen.getByRole('button', { name: /WON길 AI 고객센터/ }))
   await waitFor(() => expect(screen.getByRole('textbox').hasAttribute('readonly')).toBe(false))
   fireEvent.change(screen.getByRole('textbox'), { target: { value: '자동이체 날짜 바꾸는 방법' } })
   fireEvent.click(screen.getByRole('button', { name: '메시지 전송' }))
